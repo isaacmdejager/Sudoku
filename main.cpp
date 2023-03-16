@@ -6,7 +6,5 @@ using namespace std;
 int main() {
 
     generate();
-    printTable();
-    printMarks();
 
 }

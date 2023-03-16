@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "TableGenerator.h"
+#include "Search.h"
 
 using namespace std;
 
@@ -30,6 +31,27 @@ void printMarks() {
         }
         cout << endl;
     }
+
+}
+
+void removeMark(int a, int row, int col) {
+
+    int index;
+    for (int i = 0; i < marks[row][col].size(); i++) {
+        if (marks[row][col][i] == a) {
+            index = i;
+            break;
+        }
+    }
+    marks[row][col].erase(marks[row][col].begin() + index);
+
+}
+
+void setValue(int a, int row, int col) {
+
+    table[row][col] = a;
+    marks[row][col].clear();
+    marks[row][col].push_back(a);
 
 }
 
