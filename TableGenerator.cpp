@@ -8,6 +8,13 @@ using namespace std;
 int table[9][9];
 vector<int> marks[9][9];
 
+void printVector(vector<int> vect) {
+    for (int i = 0; i < vect.size(); i++) {
+        cout << vect[i] << " ";
+    }
+    cout << endl;
+}
+
 void printTable() {
 
     for (int i = 0; i < 9; i++) {
@@ -34,21 +41,32 @@ void printMarks() {
 
 }
 
-void assignRandomValue(int row, int col) {
+//Checks the status of the sudoku table and returns whether or not the board is fully filled
+bool filled() {
 
-    int r = rand() % marks[row][col].size();
-    table[row][col] = marks[row][col][r];
-    
+    int a;
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            if (table[i][j] == 0) {
+                return false;
+            }
+        }
+    }
 
-    marks[row][col].clear();
-    marks[row][col].push_back(table[row][col]);
-
+    return  true;
 }
-
 
 void removeMark(int a, int row, int col) {
 
-    remove(marks[row][col].begin(), marks[row][col].end(), a);
+    int index;
+    for (int i = 0; i < marks[row][col].size(); i++) {
+        if (marks[row][col][i] == a) {
+            index = i;
+            break;
+        }
+    }
+
+    marks[row][col].erase(marks[row][col].begin() + index);
 
 }
 
@@ -64,6 +82,9 @@ bool searchTableRow(int a, int row, int col) {
 
 }
 
+//Search the row of a given cell for a value. The 4th parameter is added for mark removals
+//If remove = true and a is found, then remove that value and continue. If remove = false and a is
+//found, the function immediately returns true
 bool searchMarksRow(int a, int row, int col, bool remove) {
 
     int c, d;
@@ -96,6 +117,9 @@ bool searchTableCol(int a, int row, int col) {
 
 }
 
+//Search the column of a given cell for a value. The 4th parameter is added for mark removals
+//If remove = true and a is found, then remove that value and continue. If remove = false and a is
+//found, the function immediately returns true
 bool searchMarksCol(int a, int row, int col, bool remove) {
 
     int c, d;
@@ -134,6 +158,9 @@ bool searchTableBlock(int a, int row, int col) {
 
 }
 
+//Search the block of a given cell for a value. The 4th parameter is added for mark removals
+//If remove = true and a is found, then remove that value and continue. If remove = false and a is
+//found, the function immediately returns true
 bool searchMarksBlock(int a, int row, int col, bool remove) {
 
     int c, d;
@@ -141,7 +168,7 @@ bool searchMarksBlock(int a, int row, int col, bool remove) {
     for (int i = 0; i < 3; i++) {
         for (int j = (i == 0 ? 1 : 0); j < 3; j++) {
             c = row / 3 * 3 + (row + i) % 9 % 3;
-            d = col / 3 * 3 + (row + i) % 9 % 3;
+            d = col / 3 * 3 + (col + j) % 9 % 3;
             if (find(marks[c][d].begin(), marks[c][d].end(), a) != marks[c][d].end()) {
                 if (remove) {
                     removeMark(a, c, d);
@@ -156,11 +183,7 @@ bool searchMarksBlock(int a, int row, int col, bool remove) {
 
 }
 
-//As soon as a value in the table is set, exclusion removes that value from
-//all marks in the same row, column, and block all the newly set cell
-void exclusion(int row, int col) {
-
-    int a = table[row][col];
+void exclusion(int a, int row, int col) {
 
     //remove a from all marks in the same row
     searchMarksRow(a, row, col, true);
@@ -172,6 +195,58 @@ void exclusion(int row, int col) {
     searchMarksBlock(a, row, col, true);
 
 }
+
+void setValue(int a, int row, int col) {
+    
+    table[row][col] = a;
+    marks[row][col].clear();
+    marks[row][col].push_back(a);
+
+    //After setting a value, remove marks from all cells that you can
+    exclusion(a, row, col);
+    
+}
+
+bool singleCandidate(int row, int col) {
+
+    if (marks[row][col].size() == 1) {
+        setValue(marks[row][col][0], row, col);
+        return true;
+    }
+    return false;
+
+}
+
+//If a mark only appears in one cell of a given row, col or block, that mark must be set
+//in that cell
+bool eliminationCandidate(int row, int col) {
+
+    int a;
+    for (int i = 0; i < marks[row][col].size(); i++) {
+
+        a = marks[row][col][i];
+        if (
+            !searchMarksRow(a, row, col, false) ||
+            !searchMarksCol(a, row, col, false) ||
+            !searchMarksBlock(a, row, col, false)
+        ) {
+            setValue(a, row, col);
+            return true;
+        }
+
+    }
+
+    return false;
+
+}
+
+void assignRandomValue(int row, int col) {
+
+    int r = rand() % marks[row][col].size();
+    setValue(marks[row][col][r], row, col);
+
+}
+
 
 int main() {
 
@@ -200,7 +275,7 @@ int main() {
     vector<int> initCells;
     int r, n = 8;
     for (int i = 0; i < n; i++) {
-        r = 1 + (rand() % 81);
+        r = rand() % 80;
 
         if (find(initCells.begin(), initCells.end(), r) == initCells.end()) {
             initCells.push_back(r);
@@ -215,11 +290,45 @@ int main() {
         c = initCells[i] / 9;
         d = initCells[i] % 9;
         assignRandomValue(c, d);
-        exclusion(c, d);
     }
 
-    printTable();
-    printMarks();
+    //Now, we continuously loop through the table. For every entry, we check to see
+    //if we can either fill a value, or use the marks at that entry to remove marks
+    //in other scenarios
+
+    // //This loops infinetly and will only break when the
+    // for (int i = 0; i < 81; i = (i + 1) % 81) {
+
+    // }
+
+
+    int reset = 0;
+    //Keep this loop cycled while there are still entries to be filled in the sudoku table
+    do {
+
+        //Loop through every cell
+        //If you reach a cell where something is changed, reset the loop
+        //If you reach the end of the loop (go through everything with no changes)
+        //Then you know that the board is either solved or unsolvable
+        for (int i = 0; i < 81; i++) {
+
+            c = (i + reset) % 81 / 9;
+            d = (i + reset) % 9;
+
+            if (
+                table[c][d] == 0 &&
+                (singleCandidate(c, d) ||
+                eliminationCandidate(c, d))
+            ) {
+                reset = (i + 1) % 81;
+                i = -1;
+            }
+
+        }
+
+        printTable();
+
+    } while (!filled());
     
     
 }
