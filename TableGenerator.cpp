@@ -3,6 +3,7 @@
 #include "TableGenerator.h"
 #include "Search.h"
 #include "ConfirmValue.h"
+#include "MinimizeMarks.h"
 
 using namespace std;
 
@@ -44,15 +45,5 @@ void generate() {
             }
         }
     }
-
-    setValue(7, 7, 0);
-    setValue(7, 4, 2);
-    setValue(7, 2, 7);
-    setValue(7, 0, 5);
-
-    eliminationCandidate(1, 1);
-
-    printTable();
-    printMarks();
 
 }
