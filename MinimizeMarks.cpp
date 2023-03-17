@@ -16,6 +16,7 @@ void removeMark(int a, int row, int col) {
 
 }
 
+
 //Given a value and a cell, remove the value from all marks in the same row, column,
 //and block as the given cell
 void exclusion(int a, int row, int col) {
@@ -25,6 +26,7 @@ void exclusion(int a, int row, int col) {
     searchMarksBlock(a, row, col, true);
 
 }
+
 
 //INTERSECTION
 
