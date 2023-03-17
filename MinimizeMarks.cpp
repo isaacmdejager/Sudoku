@@ -16,6 +16,7 @@ void removeMark(int a, int row, int col) {
 
 }
 
+//EXCLUSION
 
 //Given a value and a cell, remove the value from all marks in the same row, column,
 //and block as the given cell
