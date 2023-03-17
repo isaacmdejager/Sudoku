@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "TableGenerator.h"
+#include "MinimizeMarks.h"
 
 using namespace std;
 

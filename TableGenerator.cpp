@@ -2,6 +2,7 @@
 #include <vector>
 #include "TableGenerator.h"
 #include "Search.h"
+#include "ConfirmValue.h"
 
 using namespace std;
 
@@ -34,27 +35,6 @@ void printMarks() {
 
 }
 
-void removeMark(int a, int row, int col) {
-
-    int index;
-    for (int i = 0; i < marks[row][col].size(); i++) {
-        if (marks[row][col][i] == a) {
-            index = i;
-            break;
-        }
-    }
-    marks[row][col].erase(marks[row][col].begin() + index);
-
-}
-
-void setValue(int a, int row, int col) {
-
-    table[row][col] = a;
-    marks[row][col].clear();
-    marks[row][col].push_back(a);
-
-}
-
 void generate() {
 
     for (int i = 0; i < 9; i++) {
@@ -64,5 +44,15 @@ void generate() {
             }
         }
     }
+
+    setValue(7, 7, 0);
+    setValue(7, 4, 2);
+    setValue(7, 2, 7);
+    setValue(7, 0, 5);
+
+    eliminationCandidate(1, 1);
+
+    printTable();
+    printMarks();
 
 }
