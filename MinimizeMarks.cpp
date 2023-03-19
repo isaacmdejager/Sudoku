@@ -90,20 +90,6 @@ void ColBlockIntersection(int row, int col) {
 //then all marks in S can be removed from all other cells in R.
 //The same holds true for all columns and blocks.
 
-
-void printVector(vector<int> vect) {
-
-    cout << "[";
-    for (int i = 0; i < vect.size(); i++) {
-        cout << vect[i];
-        if (i != vect.size() - 1) {
-            cout << ", ";
-        }
-    }
-    cout << "]" << endl;
-
-}
-
 vector<int> inversePermutation(vector<int> perm) {
 
     vector<int> p;
@@ -118,19 +104,19 @@ vector<int> inversePermutation(vector<int> perm) {
 
 }
 
-vector<int> unionMarks(vector<int> perm, string sector, int n) {
+vector<int> unionMarks(vector<int> perm, int sector, int n) {
 
     vector<int> m, cell;
 
     for (int i = 0; i < perm.size(); i++) {
 
         //ROW
-        if (sector == "row") {
+        if (sector == 0) {
             cell = marks[n][perm[i]];
         }
 
         //COLUMN
-        else if (sector == "column") {
+        else if (sector == 1) {
             cell = marks[perm[i]][n];
         }
 
@@ -139,6 +125,7 @@ vector<int> unionMarks(vector<int> perm, string sector, int n) {
             cell = marks[3 * (n / 3) + perm[i] / 3][3 * (n % 3) + perm[i] % 3];
         }
 
+        //Search the cell for its marks. If it reaches a mark that has not been added to the union, add it
         for (int j = 0; j < cell.size(); j++) {
             if (find(m.begin(), m.end(), cell[j]) == m.end()) {
                 m.push_back(cell[j]);
@@ -153,71 +140,54 @@ vector<int> unionMarks(vector<int> perm, string sector, int n) {
 
 void FindNakedSubset(int n, vector<int> perm) {
 
-    //With the given permutation, we apply that permutation to every row,
-    //column and block in the table
-
     vector<int> m;
     vector<int> cells = inversePermutation(perm);
+    int c, d;
 
-
+    //Rows, Columns, and Blocks
     for (int i = 0; i < 3; i++) {
-        
-    }
 
+        for (int j = 0; j < 9; j++) {
 
+            //Find the union of marks in the given cells, calculated via permutation
+            m = unionMarks(perm, i, j);
 
+            //If the length of the permutation equals the cardinaility of the union of marks, then
+            //we remove the union of marks from all cells in the row/column/block not in the permutation
+            if (m.size() == n) {
 
-    //ROW
-    for (int r = 0; r < 9; r++) {
+                for (int k = 0; k < cells.size(); k++) {
 
-        m = unionMarks(perm, "row", r);
-        if (m.size() == n) {
+                    //Row
+                    if (i == 0) {
+                        c = j;
+                        d = cells[k];
+                    }
 
-            //Loop through all cells in the given row/col/block that are not in the permutation
-            for (int i = 0; i < cells.size(); i++) {
-                //Loop through the union of marks and remove those values from the cells not in
-                //the permutation
-                for (int j = 0; j < m.size(); j++) {
-                    removeMark(m[j], r, cells[i]);
+                    //Column
+                    else if (i == 1) {
+                        c = cells[k];
+                        d = j;
+                    }
+
+                    //Block
+                    else {
+                        c = 3 * (j / 3) + cells[k] / 3;
+                        d = 3 * (j % 3) + cells[k] % 3;
+                    }
+
+                    //For all values in the union of marks, remove them from cells not in the permutation
+                    for (int p = 0; p < m.size(); p++) {
+                        removeMark(m[p], c, d);
+                    }
+
                 }
+
             }
 
         }
 
     }
-
-    //COLUMN
-    for (int c = 0; c < 9; c++) {
-
-        m = unionMarks(perm, "column", c);
-        if (m.size() == n) {
-
-            for (int i = 0; i < cells.size(); i++) {
-                for (int j = 0; j < m.size(); j++) {
-                    removeMark(m[j], cells[i], c);
-                }
-            }
-
-        }
-
-    }
-
-    //BLOCK
-    for (int b = 0; b < 9; b++) {
-
-        m = unionMarks(perm, "block", b);
-        if (m.size() == n) {
-
-            for (int i = 0; i < cells.size(); i++) {
-                for (int j = 0; j < m.size(); j++) {
-                    removeMark(m[j], 3 * (b / 3) + cells[i] / 3, 3 * (b % 3) + cells[i] % 3);
-                }
-            }
-
-        }
-
-    } 
-    
 
 }
 

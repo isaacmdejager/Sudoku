@@ -46,38 +46,4 @@ void generate() {
         }
     }
 
-
-    // marks[0][0].erase(marks[0][0].begin() + 4);
-    // marks[0][1].erase(marks[0][1].begin() + 4);
-    // marks[0][5].erase(marks[0][5].begin() + 4);
-
-    for (int i = 0; i < 7; i++) {
-        marks[3][4].erase(marks[3][4].begin());
-        marks[5][3].erase(marks[5][3].begin());
-        marks[5][8].erase(marks[5][8].begin());
-        marks[1][4].erase(marks[1][4].begin());
-    }
-
-    // marks[0][4].clear();
-    // marks[0][4].push_back(5);
-
-
-    // for (int i = 0; i < 7; i++) {
-    //     marks[4][0].erase(marks[4][0].begin());
-    //     marks[4][2].erase(marks[4][2].begin());
-    //     marks[4][6].erase(marks[4][6].begin() + 8 - i);
-    //     marks[4][8].erase(marks[4][8].begin() + 8 - i);
-    // }
-
-    // marks[4][4].clear();
-    // marks[4][4].push_back(5);
-
-
-    printMarks();
-    cout << "-----------" << endl;
-
-    NakedSubset();
-
-    printMarks();
-
 }
