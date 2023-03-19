@@ -4,3 +4,4 @@ void BlockRowIntersection(int row, int col);
 void BlockColIntersection(int row, int col);
 void RowBlockIntersection(int row, int col);
 void ColBlockIntersection(int row, int col);
+void NakedSubset();
