@@ -17,18 +17,20 @@ bool searchMarks(int a, int row, int col) {
 bool searchMarksRow(int a, int c, int col, bool remove = false) {
 
     int d;
+    bool found = false;
     for (int i = 1; i < 9; i++) {
         d = (col + i) % 9;
         if (searchMarks(a, c, d)) {
+            found = true;
             if (remove) {
                 removeMark(a, c, d);
             } else {
-                return true;
+                return found;
             }
         }
     }
 
-    return false;
+    return found;
 
 }
 
@@ -39,18 +41,20 @@ bool searchMarksRow(int a, int c, int col, bool remove = false) {
 bool searchMarksCol(int a, int row, int d, bool remove = false) {
 
     int c;
+    bool found = false;
     for (int i = 1; i < 9; i++) {
         c = (row + i) % 9;
         if (searchMarks(a, c, d)) {
+            found = true;
             if (remove) {
                 removeMark(a, c, d);
             } else {
-                return true;
+                return found;
             }
         }
     }
 
-    return false;
+    return found;
 
 }
 
@@ -61,21 +65,23 @@ bool searchMarksCol(int a, int row, int d, bool remove = false) {
 bool searchMarksBlock(int a, int row, int col, bool remove = false) {
 
     int c, d;
+    bool found = false;
     for (int i = 0; i < 3; i++) {
         c = row / 3 * 3 + (row + i) % 9 % 3;
         for (int j = (i == 0 ? 1 : 0); j < 3; j++) {
             d = col / 3 * 3 + (col + j) % 9 % 3;
             if (searchMarks(a, c, d)) {
+                found = true;
                 if (remove) {
                     removeMark(a, c, d);
                 } else {
-                    return true;
+                    return found;
                 }
             }
         }
     }
 
-    return false;
+    return found;
 
 }
 
@@ -83,18 +89,20 @@ bool searchMarksBlock(int a, int row, int col, bool remove = false) {
 bool searchRowMinusBlock(int a, int c, int col, bool remove = false) {
 
     int d;
+    bool found = false;
     for (int i = 0; i < 6; i++) {
         d = (i + col + 3 - (col % 3)) % 9;
         if (searchMarks(a, c, d)) {
+            found = true;
             if (remove) {
                 removeMark(a, c, d);
             } else {
-                return true;
+                return found;
             }
         }
     }
 
-    return false;
+    return found;
 
 }
 
@@ -102,18 +110,20 @@ bool searchRowMinusBlock(int a, int c, int col, bool remove = false) {
 bool searchColMinusBlock(int a, int row, int d, bool remove = false) {
 
     int c;
+    bool found = false;
     for (int i = 0; i < 6; i++) {
         c = (i + row + 3 - (row % 3)) % 9;
         if (searchMarks(a, c, d)) {
+            found = true;
             if (remove) {
                 removeMark(a, c, d);
             } else {
-                return true;
+                return found;
             }
         }
     }
 
-    return false;
+    return found;
 
 }
 
@@ -121,21 +131,23 @@ bool searchColMinusBlock(int a, int row, int d, bool remove = false) {
 bool searchBlockMinusRow(int a, int row, int col, bool remove = false) {
 
     int c, d;
+    bool found = false;
     for (int i = 1; i < 3; i++) {
         c = row / 3 * 3 + (row + i) % 9 % 3;
         for (int j = 0; j < 3; j++) {
             d = col / 3 * 3 + (col + j) % 9 % 3;
             if (searchMarks(a, c, d)) {
+                found = true;
                 if (remove) {
                     removeMark(a, c, d);
                 } else {
-                    return true;
+                    return found;
                 }
             }
         }
     }
 
-    return false;
+    return found;
 
 }
 
@@ -143,20 +155,22 @@ bool searchBlockMinusRow(int a, int row, int col, bool remove = false) {
 bool searchBlockMinusCol(int a, int row, int col, bool remove = false) {
 
     int c, d;
+    bool found = false;
     for (int i = 1; i < 3; i++) {
         d = col / 3 * 3 + (col + i) % 9 % 3;
         for (int j = 0; j < 3; j++) {
             c = row / 3 * 3 + (row + j) % 9 % 3;
             if (searchMarks(a, c, d)) {
+                found = true;
                 if (remove) {
                     removeMark(a, c, d);
                 } else {
-                    return true;
+                    return found;
                 }
             }
         }
     }
 
-    return false;
+    return found;
 
 }

@@ -12,7 +12,8 @@ void setValue(int a, int row, int col) {
     marks[row][col].clear();
     marks[row][col].push_back(a);
 
-    //Upon setting a value, remove all marks that can be removed
+    //Upon setting a value, remove that value from the marks in the same
+    //row, column and block
     exclusion(a, row, col);
 
 }

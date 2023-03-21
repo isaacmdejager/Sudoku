@@ -8,3 +8,4 @@ bool searchRowMinusBlock(int a, int row, int col, bool remove = false);
 bool searchColMinusBlock(int a, int row, int col, bool remove = false);
 bool searchBlockMinusRow(int a, int row, int col, bool remove = false);
 bool searchBlockMinusCol(int a, int row, int col, bool remove = false);
+bool searchMarks(int a, int row, int col);
