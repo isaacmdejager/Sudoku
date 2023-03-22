@@ -1,2 +1,3 @@
 void fillTable();
-void solveTable();
+bool solveTable();
+bool tableBroke();

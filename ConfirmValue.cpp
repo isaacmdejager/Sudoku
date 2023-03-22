@@ -8,7 +8,6 @@ using namespace std;
 
 void setValue(int a, int row, int col) {
 
-    table[row][col] = a;
     marks[row][col].clear();
     marks[row][col].push_back(a);
 

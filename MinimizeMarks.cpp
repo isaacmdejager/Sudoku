@@ -2,6 +2,8 @@
 #include <vector>
 #include "TableGenerator.h"
 #include "Search.h"
+#include "TableSolver.h"
+#include "ConfirmValue.h"
 
 using namespace std;
 
@@ -316,12 +318,18 @@ bool cutWings(int v, int block[4], int row) {
     bool markRemoved = false;
     for (int i = 0; i < 9; i++) {
         if (row == 0 && i != block[0] && i != block[2]) {
-            if (removeMark(v, i, block[1]) || removeMark(v, i, block[3])) {
+            if (removeMark(v, i, block[1])) {
+                markRemoved = true;
+            }
+            if (removeMark(v, i, block[3])) {
                 markRemoved = true;
             }
         }
         else if (row == 1 && i != block[1] && i != block[3]) {
-            if (removeMark(v, block[0], i) || removeMark(v, block[2], i)) {
+            if (removeMark(v, block[0], i)) {
+                markRemoved = true;
+            }
+            if (removeMark(v, block[2], i)) {
                 markRemoved = true;
             }
         }
@@ -368,7 +376,13 @@ bool XWing() {
 
     for (int i = 1; i < 10; i++) {
 
-        if (createXWing(i, 0, block, 0) || createXWing(i, 0, block, 1)) {
+        //Row
+        if (createXWing(i, 0, block, 0)) {
+            markRemoved = true;
+        }
+        
+        //Column
+        if (createXWing(i, 0, block, 1)) {
             markRemoved = true;
         }
 
@@ -377,8 +391,6 @@ bool XWing() {
     return markRemoved;
 
 }
-
-
 
 
 // Run through all MinimizeMarks methods, cut down as many marks as possible
@@ -394,9 +406,69 @@ bool cutMarks() {
         }
     }
    
-   if (NakedSubset() || XWing()) {
+    if (NakedSubset()) {
        markRemoved = true;
-   }
+    }
+
+    if (XWing()) {
+       markRemoved = true;
+    }
    
-   return markRemoved;
+    return markRemoved;
+}
+
+
+
+
+bool Nishio() {
+
+    vector<int> snapShot[9][9];
+    vector<int> unsolvedCells;
+    int a, b;
+
+    //Take a snapshot of the marks and find all unsolved cells
+    for (int i = 0; i < 81; i++) {
+
+        a = i / 9;
+        b = i % 9;
+        for (int j = 0; j < marks[a][b].size(); j++) {
+            snapShot[a][b].push_back(marks[a][b][j]);
+        }
+
+        if (marks[a][b].size() > 1) {
+            unsolvedCells.push_back(i);
+        }
+
+    }
+
+    // Select a random unsovled cell and loop through its marks
+    if (unsolvedCells.size() == 0) {
+        printMarks();
+    }
+    int r = rand() % unsolvedCells.size();
+    a = unsolvedCells[r] / 9;
+    b = unsolvedCells[r] % 9;
+
+    int c, d;
+
+    for (int i = 0; i < snapShot[a][b].size(); i++) {
+
+        setValue(snapShot[a][b][i], a, b);
+        if (solveTable()) {
+            return true;
+        }
+
+        for (int j = 0; j < 81; j++) {
+            c = j / 9;
+            d = j % 9;
+            marks[c][d].clear();
+            for (int k = 0; k < snapShot[c][d].size(); k++) {
+                marks[c][d].push_back(snapShot[c][d][k]);
+            }
+        }
+
+    }
+
+    return false;
+
 }
