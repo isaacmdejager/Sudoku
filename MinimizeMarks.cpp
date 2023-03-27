@@ -28,15 +28,33 @@ bool removeMark(int a, int row, int col) {
 
 //EXCLUSION
 
-//Given a value and a cell, remove the value from all marks in the same row, column,
-//and block as the given cell
-void exclusion(int a, int row, int col) {
+//Given a cell, if that cell is solved then remove its mark from all rows, columns, and blocks
+bool exclusion(int row, int col) {
 
-    searchMarksRow(a, row, col, true);
-    searchMarksCol(a, row, col, true);
-    searchMarksBlock(a, row, col, true);
+    bool markRemoved = false;
 
-}
+    if (marks[row][col].size() == 1) {
+
+        int a = marks[row][col][0];
+        if (searchMarksRow(a, row, col, true)) {
+            markRemoved = true;
+        }
+
+        if (searchMarksCol(a, row, col, true)) {
+            markRemoved = true;
+        }
+
+        if (searchMarksBlock(a, row, col, true)) {
+            markRemoved = true;
+        }
+
+    }
+
+    
+
+    return markRemoved;
+
+} 
 
 
 //INTERSECTION
@@ -119,15 +137,24 @@ bool ColBlockIntersection(int row, int col) {
 
 bool intersection(int row, int col) {
 
-    if (
-        BlockRowIntersection(row, col) ||
-        BlockColIntersection(row, col) ||
-        RowBlockIntersection(row, col) ||
-        ColBlockIntersection(row, col)
-    ) {
-        return true;
+    bool markRemoved = false;
+
+    if (BlockRowIntersection(row, col)) {
+        markRemoved = true;
     }
     
+    if (BlockColIntersection(row, col)) {
+        markRemoved = true;
+    }
+    
+    if (RowBlockIntersection(row, col)) {
+        markRemoved = true;
+    }
+        
+    if (ColBlockIntersection(row, col)) {
+        markRemoved = true;
+    }
+
     return false;
 
 }
@@ -400,6 +427,14 @@ bool cutMarks() {
 
     for (int i = 0; i < 9; i++) {
         for (int j = 0; j < 9; j++) {
+            if (exclusion(i, j)) {
+                markRemoved = true;
+            }
+        }
+    }
+
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
             if (intersection(i, j)) {
                 markRemoved = true;
             }
@@ -413,12 +448,9 @@ bool cutMarks() {
     if (XWing()) {
        markRemoved = true;
     }
-   
+
     return markRemoved;
 }
-
-
-
 
 bool Nishio() {
 
@@ -426,7 +458,6 @@ bool Nishio() {
     vector<int> unsolvedCells;
     int a, b;
 
-    //Take a snapshot of the marks and find all unsolved cells
     for (int i = 0; i < 81; i++) {
 
         a = i / 9;
@@ -441,24 +472,23 @@ bool Nishio() {
 
     }
 
-    // Select a random unsovled cell and loop through its marks
-    if (unsolvedCells.size() == 0) {
-        printMarks();
-    }
     int r = rand() % unsolvedCells.size();
     a = unsolvedCells[r] / 9;
     b = unsolvedCells[r] % 9;
 
     int c, d;
-
     for (int i = 0; i < snapShot[a][b].size(); i++) {
 
-        setValue(snapShot[a][b][i], a, b);
+
+        marks[a][b].clear();
+        marks[a][b].push_back(snapShot[a][b][i]);
+
         if (solveTable()) {
             return true;
         }
 
         for (int j = 0; j < 81; j++) {
+            
             c = j / 9;
             d = j % 9;
             marks[c][d].clear();
@@ -472,3 +502,58 @@ bool Nishio() {
     return false;
 
 }
+
+
+
+// bool Nishio() {
+
+//     vector<int> snapShot[9][9];
+//     vector<int> unsolvedCells;
+//     int a, b;
+
+//     //Take a snapshot of the marks and find all unsolved cells
+//     for (int i = 0; i < 81; i++) {
+
+//         a = i / 9;
+//         b = i % 9;
+//         for (int j = 0; j < marks[a][b].size(); j++) {
+//             snapShot[a][b].push_back(marks[a][b][j]);
+//         }
+
+//         if (marks[a][b].size() > 1) {
+//             unsolvedCells.push_back(i);
+//         }
+
+//     }
+
+//     // Select a random unsovled cell and loop through its marks
+//     if (unsolvedCells.size() == 0) {
+//         cout << "oh boy" << endl;
+//     }
+//     int r = rand() % unsolvedCells.size();
+//     a = unsolvedCells[r] / 9;
+//     b = unsolvedCells[r] % 9;
+
+//     int c, d;
+
+//     for (int i = 0; i < snapShot[a][b].size(); i++) {
+
+//         setValue(snapShot[a][b][i], a, b);
+//         if (solveTable()) {
+//             return true;
+//         }
+
+//         for (int j = 0; j < 81; j++) {
+//             c = j / 9;
+//             d = j % 9;
+//             marks[c][d].clear();
+//             for (int k = 0; k < snapShot[c][d].size(); k++) {
+//                 marks[c][d].push_back(snapShot[c][d][k]);
+//             }
+//         }
+
+//     }
+
+//     return false;
+
+// }

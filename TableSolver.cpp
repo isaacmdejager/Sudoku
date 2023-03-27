@@ -1,13 +1,13 @@
 #include <iostream>
-#include <cstdlib>
 
 #include "TableGenerator.h"
 #include "ConfirmValue.h"
 #include "MinimizeMarks.h"
+#include "Search.h"
 
 using namespace std;
 
-bool solved() {
+bool tableSolved() {
 
     for (int i = 0; i < 9; i++) {
         for (int j = 0; j < 9; j++) {
@@ -21,7 +21,7 @@ bool solved() {
 
 }
 
-bool tableBroke() {
+bool tableBroken() {
 
     for (int i = 0; i < 9; i++) {
         for (int j = 0; j < 9; j++) {
@@ -35,7 +35,22 @@ bool tableBroke() {
 
 }
 
+void setValue(int a, int row, int col) {
+
+    marks[row][col].clear();
+    marks[row][col].push_back(a);
+
+}
+
 void fillTable() {
+
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            for(int k = 1; k < 10; k++) {
+                marks[i][j].push_back(k);
+            }
+        }
+    }
 
     //HARDEST SUDOKU PROBLEM
     setValue(8, 0, 0);
@@ -85,42 +100,71 @@ void fillTable() {
     // setValue(7, 7, 8);
     // setValue(7, 8, 0);
     // setValue(9, 8, 7);
+
+
+
+    cutMarks();
     
 
 
 }
 
+
+//Given a cell with mark X, if X is elimated from the marks in all other cells on that row,
+//then set X to the cell in that table.
+//Same applies to a cell's column and block.
+//Return true if X can be set. Otherwise return false.
+bool elimination(int row, int col) {
+
+    int a;
+    for (int i = 0; i < marks[row][col].size(); i++) {
+
+        a = marks[row][col][i];
+        if (
+            !searchMarksRow(a, row, col) ||
+            !searchMarksCol(a, row, col) ||
+            !searchMarksBlock(a, row, col)
+        ) {
+            setValue(a, row, col);
+            return true;
+        }
+
+    }
+
+    return false;
+    
+}
+
 bool solveTable() {
+
+    cutMarks();
 
     int stoppedAt = 0;
     int j;
 
-    while (cutMarks()) {
-    // do {
+    for (int i = 0; i < 81; i++) {
 
-        for (int i = 0; i < 81; i++) {
+        j = (stoppedAt + i) % 81;
 
-            j = (i + stoppedAt) % 81;
-            if (marks[j / 9][j % 9].size() > 1 &&
-                (singleCandidate(j / 9, j % 9) || eliminationCandidate(j / 9, j % 9))
-            ) {
-                i = -1;
-                stoppedAt = j;
-            }
-
-        }
-
-        if (solved()) {
-            return true;
-        }
-
-        else if(tableBroke()) {
-            return false;
+        if (marks[j / 9][j % 9].size() > 1 && elimination(j / 9, j % 9)) {
+            i = -1;
+            stoppedAt = j;
+            cutMarks();
         }
 
     }
-    // } while(cutMarks());
 
+    //Scenario 1: table is solved
+    if (tableSolved()) {
+        return true;
+    }
+
+    //Scenario 2: table is broken
+    if (tableBroken()) {
+        return false;
+    }
+
+    //Scenario 3: table is stuck
     return Nishio();
 
 }

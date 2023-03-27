@@ -33,31 +33,41 @@ bool matchesSolution() {
 
 }
 
+void wipeTable() {
+
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            table[i][j] = 0;
+            marks[i][j].clear();
+        }
+    }
+
+}
+
 int main() {
 
     srand((unsigned) time(NULL));
 
-    generate();
+    for (int k = 0; k < 100; k++) {
 
-    fillTable();
+        fillTable();
 
-    solveTable();
+        solveTable();
 
 
-    for (int i = 0; i < 9; i++) {
-        for (int j = 0; j < 9; j++) {
-            if (marks[i][j].size() == 1) {
-                table[i][j] = marks[i][j][0];
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (marks[i][j].size() == 1) {
+                    table[i][j] = marks[i][j][0];
+                }
             }
         }
+
+        cout << matchesSolution() << endl;
+
+
+        wipeTable();
+    
     }
-
-    printTable();
-
-    cout << endl;
-    cout << "===================" << endl;
-    cout << endl;
-
-    cout << matchesSolution() << endl;
 
 }
