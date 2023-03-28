@@ -3,11 +3,10 @@
 #include "TableGenerator.h"
 #include "Search.h"
 #include "TableSolver.h"
-#include "ConfirmValue.h"
 
 using namespace std;
 
-bool removeMark(int a, int row, int col) {
+void removeMark(int a, int row, int col) {
 
     int index = -1;
     for (int i = 0; i < marks[row][col].size(); i++) {
@@ -19,143 +18,87 @@ bool removeMark(int a, int row, int col) {
 
     if (index != -1) {
         marks[row][col].erase(marks[row][col].begin() + index);
-        return true;
     }
-
-    return false;
     
 }
 
 //EXCLUSION
 
 //Given a cell, if that cell is solved then remove its mark from all rows, columns, and blocks
-bool exclusion(int row, int col) {
-
-    bool markRemoved = false;
+void exclusion(int row, int col) {
 
     if (marks[row][col].size() == 1) {
-
+        
         int a = marks[row][col][0];
-        if (searchMarksRow(a, row, col, true)) {
-            markRemoved = true;
-        }
-
-        if (searchMarksCol(a, row, col, true)) {
-            markRemoved = true;
-        }
-
-        if (searchMarksBlock(a, row, col, true)) {
-            markRemoved = true;
-        }
+        searchMarksRow(a, row, col, true);
+        searchMarksCol(a, row, col, true);
+        searchMarksBlock(a, row, col, true);
 
     }
-
-    
-
-    return markRemoved;
 
 } 
 
 
 //INTERSECTION
 
-//Suppose a given cell C has a mark X. If, for all cells in the same row BUT NOT the same column,
+//Suppose a given cell C has a mark X. If, for the 6 cells in the same row but not the same block as C,
 //X is not a mark, then remove X from the 6 cells in the same block as C but not the same row
-bool BlockRowIntersection(int row, int col) {
+void BlockRowIntersection(int row, int col) {
 
-    bool markRemoved = false;
     for (int i = 0; i < marks[row][col].size(); i++) {
-        if (
-            marks[row][col].size() > 1 &&
-            !searchRowMinusBlock(marks[row][col][i], row, col) &&
-            searchBlockMinusRow(marks[row][col][i], row, col, true)
-        ) {
-            markRemoved = true;
+        if (!searchRowMinusBlock(marks[row][col][i], row, col)) {
+            searchBlockMinusRow(marks[row][col][i], row, col, true);
         }
     }
 
-    return markRemoved;
-
 }
 
-//Given a cell C with mark X, if for all cells in the same column but not the same block, X is not
-//a mark, then remove X from the 6 cells in the same block as C but not the same column
-bool BlockColIntersection(int row, int col) {
+//Suppose a given cell C has a mark X. If, for the 6 cells in the same column but not he same block as C, 
+//X is not a mark, then remove X from the 6 cells in the same block as C but not the same column
+void BlockColIntersection(int row, int col) {
 
-    bool markRemoved = false;
     for (int i = 0; i < marks[row][col].size(); i++) {
-        if (
-            marks[row][col].size() > 1 && 
-            !searchColMinusBlock(marks[row][col][i], row, col) &&
-            searchBlockMinusCol(marks[row][col][i], row, col, true)
-        ) {
-            markRemoved = true;
+        if (!searchColMinusBlock(marks[row][col][i], row, col)) {
+            searchBlockMinusCol(marks[row][col][i], row, col, true);
         }
     }
 
-    return markRemoved;
-
 }
 
-//Given a cell C with mark X, if for all cells in the same block but not the same row, X is not
-//a mark, then remove X from the 6 cells in the same row as C but not the same block
-bool RowBlockIntersection(int row, int col) {
+//Suppose a given cell C has a mark X. If, for the 6 cells in the same block but not same row as C,
+//X is not a mark, then remove X from the 6 cells in the same row as C but not the same block
+void RowBlockIntersection(int row, int col) {
 
-    bool markRemoved = false;
     for (int i = 0; i < marks[row][col].size(); i++) {
-        if (
-            marks[row][col].size() > 1 &&
-            !searchBlockMinusRow(marks[row][col][i], row, col) &&
-            searchRowMinusBlock(marks[row][col][i], row, col, true)
-        ) {
-            markRemoved = true;
+        if (!searchBlockMinusRow(marks[row][col][i], row, col)) {
+            searchRowMinusBlock(marks[row][col][i], row, col, true);
         }
     }
 
-    return markRemoved;
-
 }
 
-//Given a cell C with mark X, if for all cells in the same block but no the same column, X is not
-//a mark, then remove X from the 6 cells in the same row as C but no the same block
-bool ColBlockIntersection(int row, int col) {
+//Suppose a given cell C has mark X. If, for the 6 cells in the same block but not the same column as C,
+//X is not a mark, then remove X from the 6 cells in the same column as C but not the same block
+void ColBlockIntersection(int row, int col) {
 
-    bool markRemoved = false;
     for (int i = 0; i < marks[row][col].size(); i++) {
-        if (
-            marks[row][col].size() > 1 &&
-            !searchBlockMinusCol(marks[row][col][i], row, col) &&
-            searchColMinusBlock(marks[row][col][i], row, col, true)
-        ) {
-            markRemoved = true;
+        if (!searchBlockMinusCol(marks[row][col][i], row, col)) {
+            searchColMinusBlock(marks[row][col][i], row, col, true);
         }
     }
 
-    return markRemoved;
-
 }
 
-bool intersection(int row, int col) {
+void intersection(int row, int col) {
 
-    bool markRemoved = false;
+    if (marks[row][col].size() > 1) {
 
-    if (BlockRowIntersection(row, col)) {
-        markRemoved = true;
-    }
-    
-    if (BlockColIntersection(row, col)) {
-        markRemoved = true;
-    }
-    
-    if (RowBlockIntersection(row, col)) {
-        markRemoved = true;
-    }
-        
-    if (ColBlockIntersection(row, col)) {
-        markRemoved = true;
-    }
+        BlockRowIntersection(row, col);
+        BlockColIntersection(row, col);
+        RowBlockIntersection(row, col);
+        ColBlockIntersection(row, col);
 
-    return false;
+    }
 
 }
 
@@ -213,12 +156,11 @@ vector<int> unionMarks(vector<int> perm, int sector, int n) {
 
 }
 
-bool FindNakedSubset(int n, vector<int> perm) {
+void FindNakedSubset(int n, vector<int> perm) {
 
     vector<int> m;
     vector<int> cells = inversePermutation(perm);
     int c, d;
-    bool markRemoved = false;
 
     //Rows, Columns, and Blocks
     for (int i = 0; i < 3; i++) {
@@ -254,7 +196,7 @@ bool FindNakedSubset(int n, vector<int> perm) {
 
                     //For all values in the union of marks, remove them from cells not in the permutation
                     for (int p = 0; p < m.size(); p++) {
-                        markRemoved = removeMark(m[p], c, d);
+                        removeMark(m[p], c, d);
                     }
 
                 }
@@ -265,51 +207,37 @@ bool FindNakedSubset(int n, vector<int> perm) {
 
     }
 
-    return markRemoved;
-
 }
 
 // n = size of subset
 // index = current index of subset
 // arr = full subset
-bool permutation(int n, int index, vector<int> arr) {
+void permutation(int n, int index, vector<int> arr) {
 
-    bool markRemoved = false;
     for (int i = index == 0 ? 0 : arr[index - 1] + 1; i < 10 - n + index; i++) {
         
         arr[index] = i;
         if (index != n - 1) {
-            if (permutation(n, index + 1, arr)) {
-                markRemoved = true;
-            }
+            permutation(n, index + 1, arr);
         } else {
             //At every permutation, find the union of marks amongst the row, column and block
-            if (FindNakedSubset(n, arr)) {
-                markRemoved = true;
-            }
+            FindNakedSubset(n, arr);
         }
 
     }
 
-    return markRemoved;
-
 }
 
-bool NakedSubset() {
+void NakedSubset() {
 
     vector<int> arr;
     arr.push_back(0);
-    bool markRemoved = false;
 
     //Create all permutations of [0 - 8], starting with tuple size 2 up to size 8
     for (int i = 2; i < 9; i++) {
         arr.push_back(0);
-        if (permutation(i, 0, arr)) {
-            markRemoved = true;
-        }
+        permutation(i, 0, arr);
     }
-
-    return markRemoved;
 
 }
 
@@ -323,11 +251,11 @@ bool NakedSubset() {
 //Search either the given row or column to see if there are at least 3 instaces of the same
 //mark
 
-bool checkForThree(int v, int i, bool row) {
+bool checkForThree(int v, int i, bool isRow) {
 
     int counter = 0;
     for (int j = 0; j < 9; j++) {
-        if (row ? searchMarks(v, i, j) : searchMarks(v, j, i)) {
+        if (isRow ? searchMarks(v, i, j) : searchMarks(v, j, i)) {
             counter++;
             if (counter > 2) {
                 return true;
@@ -340,116 +268,84 @@ bool checkForThree(int v, int i, bool row) {
 }
 
 //Upon finding an X-Wing, remove the value from either the rows or columns
-bool cutWings(int v, int block[4], int row) {
+void cutWings(int v, int corners[4], int isRow) {
 
-    bool markRemoved = false;
     for (int i = 0; i < 9; i++) {
-        if (row == 0 && i != block[0] && i != block[2]) {
-            if (removeMark(v, i, block[1])) {
-                markRemoved = true;
-            }
-            if (removeMark(v, i, block[3])) {
-                markRemoved = true;
-            }
+        if (isRow == 0 && i != corners[0] && i != corners[2]) {
+            removeMark(v, i, corners[1]);
+            removeMark(v, i, corners[3]);
         }
-        else if (row == 1 && i != block[1] && i != block[3]) {
-            if (removeMark(v, block[0], i)) {
-                markRemoved = true;
-            }
-            if (removeMark(v, block[2], i)) {
-                markRemoved = true;
-            }
+        else if (isRow == 1 && i != corners[1] && i != corners[3]) {
+            removeMark(v, corners[0], i);
+            removeMark(v, corners[2], i);
         }
     }
 
-    return markRemoved;
-
 }
 
-bool createXWing(int v, int i, int block[4], int row) {
+void createXWing(int v, int i, int corners[4], int isRow) {
 
-    bool markRemoved = false;
-    for (int j = (i < 2 ? i / 2 : block[i % 2] + 1); j < 8 + i / 2; j++) {
+    for (int j = (i < 2 ? i / 2 : corners[i % 2] + 1); j < 8 + i / 2; j++) {
 
-        if (i % 2 == row && checkForThree(v, j, i % 2 == 0)) {
+        if (i % 2 == isRow && checkForThree(v, j, i % 2 == 0)) {
             continue;
         }
 
-        block[i] = j;
+        corners[i] = j;
         if (i < 3) {
-            createXWing(v, i + 1, block, row);
+            createXWing(v, i + 1, corners, isRow);
         } 
         else if (
-                searchMarks(v, block[0], block[1]) && 
-                searchMarks(v, block[0], block[3]) &&
-                searchMarks(v, block[2], block[1]) &&
-                searchMarks(v, block[2], block[3])
+                searchMarks(v, corners[0], corners[1]) && 
+                searchMarks(v, corners[0], corners[3]) &&
+                searchMarks(v, corners[2], corners[1]) &&
+                searchMarks(v, corners[2], corners[3])
             ) {
-            if (cutWings(v, block, row)) {
-                markRemoved = true;
-            }
+            cutWings(v, corners, isRow);
         }
 
     }    
 
-    return markRemoved;
-
 }
 
-bool XWing() {
+void XWing() {
 
-    int block[4];
-    bool markRemoved = false;
+    int corners[4];
 
     for (int i = 1; i < 10; i++) {
 
         //Row
-        if (createXWing(i, 0, block, 0)) {
-            markRemoved = true;
-        }
-        
+        createXWing(i, 0, corners, 0);
+
         //Column
-        if (createXWing(i, 0, block, 1)) {
-            markRemoved = true;
-        }
+        createXWing(i, 0, corners, 1);
 
     }
-    
-    return markRemoved;
 
 }
 
 
 // Run through all MinimizeMarks methods, cut down as many marks as possible
-bool cutMarks() {
+void cutMarks() {
 
     bool markRemoved = false;
 
     for (int i = 0; i < 9; i++) {
         for (int j = 0; j < 9; j++) {
-            if (exclusion(i, j)) {
-                markRemoved = true;
-            }
+            exclusion(i, j);
         }
     }
 
     for (int i = 0; i < 9; i++) {
         for (int j = 0; j < 9; j++) {
-            if (intersection(i, j)) {
-                markRemoved = true;
-            }
+            intersection(i, j);
         }
     }
    
-    if (NakedSubset()) {
-       markRemoved = true;
-    }
+    NakedSubset();
 
-    if (XWing()) {
-       markRemoved = true;
-    }
+    XWing();
 
-    return markRemoved;
 }
 
 bool Nishio() {
@@ -502,58 +398,3 @@ bool Nishio() {
     return false;
 
 }
-
-
-
-// bool Nishio() {
-
-//     vector<int> snapShot[9][9];
-//     vector<int> unsolvedCells;
-//     int a, b;
-
-//     //Take a snapshot of the marks and find all unsolved cells
-//     for (int i = 0; i < 81; i++) {
-
-//         a = i / 9;
-//         b = i % 9;
-//         for (int j = 0; j < marks[a][b].size(); j++) {
-//             snapShot[a][b].push_back(marks[a][b][j]);
-//         }
-
-//         if (marks[a][b].size() > 1) {
-//             unsolvedCells.push_back(i);
-//         }
-
-//     }
-
-//     // Select a random unsovled cell and loop through its marks
-//     if (unsolvedCells.size() == 0) {
-//         cout << "oh boy" << endl;
-//     }
-//     int r = rand() % unsolvedCells.size();
-//     a = unsolvedCells[r] / 9;
-//     b = unsolvedCells[r] % 9;
-
-//     int c, d;
-
-//     for (int i = 0; i < snapShot[a][b].size(); i++) {
-
-//         setValue(snapShot[a][b][i], a, b);
-//         if (solveTable()) {
-//             return true;
-//         }
-
-//         for (int j = 0; j < 81; j++) {
-//             c = j / 9;
-//             d = j % 9;
-//             marks[c][d].clear();
-//             for (int k = 0; k < snapShot[c][d].size(); k++) {
-//                 marks[c][d].push_back(snapShot[c][d][k]);
-//             }
-//         }
-
-//     }
-
-//     return false;
-
-// }
