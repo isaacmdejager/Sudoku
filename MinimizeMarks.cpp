@@ -21,8 +21,7 @@ void removeMark(int a, int row, int col) {
     if (index != -1) {
 
         marks[row][col].erase(marks[row][col].begin() + index);
-        
-        if (find(removedMarks.begin(), removedMarks.end(), 9 * row + col) != removedMarks.end()) {
+        if (find(removedMarks.begin(), removedMarks.end(), 9 * row + col) == removedMarks.end()) {
             removedMarks.push_back(9 * row  + col);
         }
         
@@ -460,6 +459,10 @@ void XWing() {
 
 }
 
+float totalXWing = 0;
+float x = 0;
+float totalNS = 0;
+float y = 0;
 
 // Run through all MinimizeMarks methods, cut down as many marks as possible
 void cutMarks() {
@@ -468,11 +471,17 @@ void cutMarks() {
 
         removedMarks.clear();
 
+        const clock_t exc = clock();
+
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 exclusion(i, j);
             }
         }
+
+        // cout << "Exclusion = " << float(clock() - exc) << endl;
+
+        const clock_t inter = clock();
 
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
@@ -480,7 +489,18 @@ void cutMarks() {
             }
         }
 
+        // cout << "Intersection = " << float(clock() - inter) << endl;
+
+        const clock_t xw = clock();
+
         XWing();
+
+        x++;
+        totalXWing += float(clock() - xw);
+
+        // cout << "X-Wing = " << float(clock() - xw) << endl;
+
+        const clock_t ns = clock();
 
 
         //Loop the removed marks and apply NakedSubset
@@ -489,9 +509,22 @@ void cutMarks() {
 
             if (marks[removedMarks[i] / 9][removedMarks[i] % 9].size() > 1) {
                 NakedSubset(removedMarks[i]);
+
+                y++;
+                totalNS += float(clock() - ns);
             }
 
         }
+
+        // if (removedMarks.size() > 0) {
+        //     cout << "Naked Subset = " << float(clock() - ns) << endl;
+        // }
+        // cout << endl;
+
+
+        // cout << totalXWing / x << endl;
+        // cout << totalNS / y << endl;
+        // cout << endl;
 
 
     } while (removedMarks.size() != 0);

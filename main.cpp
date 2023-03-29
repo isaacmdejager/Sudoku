@@ -51,7 +51,7 @@ int main() {
     srand((unsigned) time(NULL));
 
 
-    // for (int k = 0; k < 100; k++) {
+    for (int k = 0; k < 1; k++) {
 
         fillTable();
 
@@ -78,22 +78,22 @@ int main() {
 
 
 
-        // solveTable();
+        solveTable();
 
-        // for (int i = 0; i < 9; i++) {
-        //     for (int j = 0; j < 9; j++) {
-        //         if (marks[i][j].size() == 1) {
-        //             table[i][j] = marks[i][j][0];
-        //         }
-        //     }
-        // }
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (marks[i][j].size() == 1) {
+                    table[i][j] = marks[i][j][0];
+                }
+            }
+        }
 
-        // // printTable();
-        // // cout << matchesSolution() << endl;
+        printTable();
+        // cout << matchesSolution() << endl;
 
-        // wipeTable();
+        wipeTable();
 
-    // }
+    }
 
    
 
