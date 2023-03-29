@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <ctime>
+
 #include "TableGenerator.h"
 #include "TableSolver.h"
 #include "MinimizeMarks.h"
@@ -48,26 +50,51 @@ int main() {
 
     srand((unsigned) time(NULL));
 
-    for (int k = 0; k < 100; k++) {
+
+    // for (int k = 0; k < 100; k++) {
 
         fillTable();
 
-        solveTable();
+        // for (int i = 0; i < 6; i++) {
+
+        //     marks[0][3].erase(marks[0][3].begin());
+        //     marks[0][5].erase(marks[0][5].begin());
+        //     marks[0][8].erase(marks[0][8].begin());
+        //     // marks[1][3].erase(marks[1][3].begin());
+        //     // marks[2][5].erase(marks[2][5].begin());
+        //     // marks[6][3].erase(marks[6][3].begin());
+            
+        // }
+
+        // printMarks();
+        // cout << endl;
+        // cout << endl;
+
+        // NakedSubset(8);
+        // cout << endl;
+        // cout << endl;
+
+        // printMarks();
 
 
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                if (marks[i][j].size() == 1) {
-                    table[i][j] = marks[i][j][0];
-                }
-            }
-        }
 
-        cout << matchesSolution() << endl;
+        // solveTable();
 
+        // for (int i = 0; i < 9; i++) {
+        //     for (int j = 0; j < 9; j++) {
+        //         if (marks[i][j].size() == 1) {
+        //             table[i][j] = marks[i][j][0];
+        //         }
+        //     }
+        // }
 
-        wipeTable();
-    
-    }
+        // // printTable();
+        // // cout << matchesSolution() << endl;
+
+        // wipeTable();
+
+    // }
+
+   
 
 }
