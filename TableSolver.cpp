@@ -39,6 +39,7 @@ void setValue(int a, int row, int col) {
 
     marks[row][col].clear();
     marks[row][col].push_back(a);
+    table[row][col] = a;
 
 }
 
@@ -53,27 +54,27 @@ void fillTable() {
     }
 
     //HARDEST SUDOKU PROBLEM
-    // setValue(8, 0, 0);
-    // setValue(3, 1, 2);
-    // setValue(6, 1, 3);
-    // setValue(7, 2, 1);
-    // setValue(9, 2, 4);
-    // setValue(2, 2, 6);
-    // setValue(5, 3, 1);
-    // setValue(7, 3, 5);
-    // setValue(4, 4, 4);
-    // setValue(5, 4, 5);
-    // setValue(7, 4, 6);
-    // setValue(1, 5, 3);
-    // setValue(3, 5, 7);
-    // setValue(1, 6, 2);
-    // setValue(6, 6, 7);
-    // setValue(8, 6, 8);
-    // setValue(8, 7, 2);
-    // setValue(5, 7, 3);
-    // setValue(1, 7, 7);
-    // setValue(9, 8, 1);
-    // setValue(4, 8, 6);
+    setValue(8, 0, 0);
+    setValue(3, 1, 2);
+    setValue(6, 1, 3);
+    setValue(7, 2, 1);
+    setValue(9, 2, 4);
+    setValue(2, 2, 6);
+    setValue(5, 3, 1);
+    setValue(7, 3, 5);
+    setValue(4, 4, 4);
+    setValue(5, 4, 5);
+    setValue(7, 4, 6);
+    setValue(1, 5, 3);
+    setValue(3, 5, 7);
+    setValue(1, 6, 2);
+    setValue(6, 6, 7);
+    setValue(8, 6, 8);
+    setValue(8, 7, 2);
+    setValue(5, 7, 3);
+    setValue(1, 7, 7);
+    setValue(9, 8, 1);
+    setValue(4, 8, 6);
 
 
 
@@ -103,6 +104,12 @@ void fillTable() {
 
 }
 
+//Given a cell, if there is only one mark placed in that cell then place it
+bool singleCandidate(int row, int col) {
+
+
+
+}
 
 //Given a cell with mark X, if X is elimated from the marks in all other cells on that row,
 //then set X to the cell in that table.
@@ -136,11 +143,13 @@ bool solveTable() {
     int stoppedAt = 0;
     int j;
 
+    //Loop through all 81 cells, checking at every one to see if a value can be set
     for (int i = 0; i < 81; i++) {
 
         j = (stoppedAt + i) % 81;
 
-        if (marks[j / 9][j % 9].size() > 1 && elimination(j / 9, j % 9)) {
+        //If a new value is set, reset the loop counter and all cut marks
+        if (table[j / 9][j % 9] == 0 && (singleCandidate(j / 9, j % 9) || elimination(j / 9, j % 9))) {
             
             i = -1;
             stoppedAt = j;

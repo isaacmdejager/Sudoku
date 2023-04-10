@@ -261,7 +261,7 @@ void FindNakedSubset(int n, vector<int> perm, int cell) {
 
     for (int i = 0; i < 3; i++) {
 
-        m = unionMarks(perm, i, cell);\
+        m = unionMarks(perm, i, cell);
 
         if (m.size() == n) {
 
@@ -273,63 +273,11 @@ void FindNakedSubset(int n, vector<int> perm, int cell) {
 
 }
 
-// void FindNakedSubset(int n, vector<int> perm, int cell) {
-
-//     vector<int> m;
-//     vector<int> cells = inversePermutation(perm);
-//     int c, d;
-
-//     //Rows, Columns, and Blocks
-//     for (int i = 0; i < 3; i++) {
-
-//         for (int j = 0; j < 9; j++) {
-
-//             //Find the union of marks in the given cells, calculated via permutation
-//             m = unionMarks(perm, i, j);
-
-//             //If the length of the permutation equals the cardinaility of the union of marks, then
-//             //we remove the union of marks from all cells in the row/column/block not in the permutation
-//             if (m.size() == n) {
-
-//                 for (int k = 0; k < cells.size(); k++) {
-
-//                     //Row
-//                     if (i == 0) {
-//                         c = j;
-//                         d = cells[k];
-//                     }
-
-//                     //Column
-//                     else if (i == 1) {
-//                         c = cells[k];
-//                         d = j;
-//                     }
-
-//                     //Block
-//                     else {
-//                         c = 3 * (j / 3) + cells[k] / 3;
-//                         d = 3 * (j % 3) + cells[k] % 3;
-//                     }
-
-//                     //For all values in the union of marks, remove them from cells not in the permutation
-//                     for (int p = 0; p < m.size(); p++) {
-//                         removeMark(m[p], c, d);
-//                     }
-
-//                 }
-
-//             }
-
-//         }
-
-//     }
-
-// }
-
 
 // n = size of subset
 // index = current index of subset
 // arr = full subset
+int perms;
 void permutation(int n, int index, vector<int> arr, int cell) {
 
     for (int i = index == 0 ? 0 : arr[index - 1] + 1; i < 9 - n + index; i++) {
@@ -338,6 +286,7 @@ void permutation(int n, int index, vector<int> arr, int cell) {
         if (index != n - 1) {
             permutation(n, index + 1, arr, cell);
         } else {
+            perms++;
             //At every permutation, find the union of marks amongst the row, column and block
             FindNakedSubset(n + 1, arr, cell);
         }
@@ -361,6 +310,7 @@ void permutation(int n, int index, vector<int> arr, int cell) {
 
 void NakedSubset(int cell) {
 
+    perms = 0;
     vector<int> arr;
     int row = cell / 9;
     int col = cell % 9;
@@ -373,6 +323,8 @@ void NakedSubset(int cell) {
         arr.push_back(0);
         permutation(i, 0, arr, cell);
     }
+
+    cout << perms << endl;
 
 }
 
@@ -491,27 +443,27 @@ void cutMarks() {
 
         // cout << "Intersection = " << float(clock() - inter) << endl;
 
-        const clock_t xw = clock();
-
         XWing();
 
         x++;
-        totalXWing += float(clock() - xw);
+        // totalXWing += float(clock() - xw);
 
         // cout << "X-Wing = " << float(clock() - xw) << endl;
 
-        const clock_t ns = clock();
+        // const clock_t ns = clock();
 
 
         //Loop the removed marks and apply NakedSubset
         //All cells that NakedSubset removes marks from will be pushed to the back
+        const clock_t c = clock();
+
         for (int i = 0; i < removedMarks.size(); i++) {
 
             if (marks[removedMarks[i] / 9][removedMarks[i] % 9].size() > 1) {
                 NakedSubset(removedMarks[i]);
 
                 y++;
-                totalNS += float(clock() - ns);
+                // totalNS += float(clock() - ns);
             }
 
         }
@@ -528,38 +480,6 @@ void cutMarks() {
 
 
     } while (removedMarks.size() != 0);
-
-    // const clock_t exc = clock();
-
-    // for (int i = 0; i < 9; i++) {
-    //     for (int j = 0; j < 9; j++) {
-    //         exclusion(i, j);
-    //     }
-    // }
-
-    // cout << "Exclusion = " << float(clock() - exc) << endl;
-
-    // const clock_t inter = clock();
-
-    // for (int i = 0; i < 9; i++) {
-    //     for (int j = 0; j < 9; j++) {
-    //         intersection(i, j);
-    //     }
-    // }
-
-    // cout << "Intersection = " << float(clock() - inter) << endl;
-
-    // const clock_t nkd = clock();
-   
-    // NakedSubset();
-
-    // cout << "Naked Subset = " << float(clock() - nkd) << endl;
-
-    // const clock_t xw = clock();
-
-    // XWing();
-
-    // cout << "X Wing = " << float(clock() - xw) << endl;
 
 }
 

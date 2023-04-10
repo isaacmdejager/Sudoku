@@ -50,8 +50,11 @@ int main() {
 
     srand((unsigned) time(NULL));
 
+    float time = 0;
 
-    for (int k = 0; k < 1; k++) {
+    // for (int k = 0; k < 100; k++) {
+
+        const clock_t c = clock();
 
         fillTable();
 
@@ -88,12 +91,18 @@ int main() {
             }
         }
 
-        printTable();
+        // printTable();
         // cout << matchesSolution() << endl;
+
+        // cout << float(clock() - c) << endl;
+
+        time += float(clock() - c);
 
         wipeTable();
 
-    }
+    // }
+
+    // cout << float(time / 100) << endl;
 
    
 
