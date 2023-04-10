@@ -107,7 +107,12 @@ void fillTable() {
 //Given a cell, if there is only one mark placed in that cell then place it
 bool singleCandidate(int row, int col) {
 
+    if (marks[row][col].size() == 1) {
+        setValue(marks[row][col][0], row, col);
+        return true;
+    }
 
+    return false;
 
 }
 

@@ -54,18 +54,20 @@ int main() {
 
     // for (int k = 0; k < 100; k++) {
 
-        const clock_t c = clock();
+    //     const clock_t c = clock();
 
         fillTable();
 
         // for (int i = 0; i < 6; i++) {
 
-        //     marks[0][3].erase(marks[0][3].begin());
-        //     marks[0][5].erase(marks[0][5].begin());
-        //     marks[0][8].erase(marks[0][8].begin());
+        //     marks[0][3].erase(marks[0][3].begin() + 3);
+        //     marks[0][5].erase(marks[0][5].begin() + 3);
+        //     marks[0][8].erase(marks[0][8].begin() + 3);
         //     // marks[1][3].erase(marks[1][3].begin());
         //     // marks[2][5].erase(marks[2][5].begin());
         //     // marks[6][3].erase(marks[6][3].begin());
+        //     marks[6][3].erase(marks[6][3].begin() + 3);
+        //     marks[2][3].erase(marks[2][3].begin() + 3);
             
         // }
 
@@ -73,7 +75,7 @@ int main() {
         // cout << endl;
         // cout << endl;
 
-        // NakedSubset(8);
+        // NakedSubset(3);
         // cout << endl;
         // cout << endl;
 
@@ -92,18 +94,16 @@ int main() {
         }
 
         // printTable();
-        // cout << matchesSolution() << endl;
 
         // cout << float(clock() - c) << endl;
 
-        time += float(clock() - c);
+        // time += float(clock() - c);
 
-        wipeTable();
+        // wipeTable();
 
     // }
 
+    // cout << "============" << endl;
     // cout << float(time / 100) << endl;
-
-   
 
 }

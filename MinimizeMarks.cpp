@@ -129,40 +129,6 @@ vector<int> inversePermutation(vector<int> perm) {
 
 }
 
-// vector<int> unionMarks(vector<int> perm, int sector, int n) {
-
-//     vector<int> m, cell;
-
-//     for (int i = 0; i < perm.size(); i++) {
-
-//         //ROW
-//         if (sector == 0) {
-//             cell = marks[n][perm[i]];
-//         }
-
-//         //COLUMN
-//         else if (sector == 1) {
-//             cell = marks[perm[i]][n];
-//         }
-
-//         //BLOCK
-//         else {
-//             cell = marks[3 * (n / 3) + perm[i] / 3][3 * (n % 3) + perm[i] % 3];
-//         }
-
-//         //Search the cell for its marks. If it reaches a mark that has not been added to the union, add it
-//         for (int j = 0; j < cell.size(); j++) {
-//             if (find(m.begin(), m.end(), cell[j]) == m.end()) {
-//                 m.push_back(cell[j]);
-//             }
-//         }
-        
-//     }
-
-//     return m;
-
-// }
-
 void printVector(vector<int> vect) {
 
     cout << "[";
@@ -176,9 +142,9 @@ void printVector(vector<int> vect) {
 
 }
 
-vector<int> unionMarks(vector<int> perm, int sector, int cell) {
+vector<int> unionMarks(int cell, vector<int> cells) {
 
-    vector<int> m, currentCellMarks;
+    vector<int> m;
 
     int row = cell / 9;
     int col = cell % 9;
@@ -187,85 +153,72 @@ vector<int> unionMarks(vector<int> perm, int sector, int cell) {
         m.push_back(marks[row][col][i]);
     }
 
-    for (int i = 0; i < perm.size(); i++) {
+    for (int i = 0; i < cells.size(); i++) {
 
-        //ROW
-        if (sector == 0) {
-            row = cell / 9;
-            col = (cell % 9 + perm[i] + 1) % 9;
-            currentCellMarks = marks[row][col];
-        }
+        row = cells[i] / 9;
+        col = cells[i] % 9;
 
-        //COLUMN
-        else if (sector == 1) {
-            row = (cell / 9 + perm[i] + 1) % 9;
-            col = cell % 9;
-            currentCellMarks = marks[row][col];
-        }
-
-        //BLOCK
-        else {
-            row = cell / 9 / 3 * 3 + ((cell % 9 % 3 + perm[i] + 1) / 3 + cell / 9 % 3) % 3;
-            col = cell % 9 / 3 * 3 + (cell % 9 % 3 + perm[i] + 1) % 3;
-            currentCellMarks = marks[row][col];
-        }
-
-        for (int j = 0; j < currentCellMarks.size(); j++) {
-            if (find(m.begin(), m.end(), currentCellMarks[j]) == m.end()) {
-                m.push_back(currentCellMarks[j]);
+        for (int j = 0; j < marks[row][col].size(); j++) {
+            if (find(m.begin(), m.end(), marks[row][col][j]) == m.end()) {
+                m.push_back(marks[row][col][j]);
             }
         }
 
     }
 
     return m;
+    
+}
+
+vector<int> getCells(int cell, int sector, vector<int> perm = vector<int>()) {
+
+    vector<int> cells;
+    int row, col;
+
+    for (int i = 0; i < 8; i++) {
+
+        if (sector == 0) {
+            row = cell / 9;
+            col = (cell % 9 + i + 1) % 9;
+        }
+        else if (sector == 1) {
+            row = (cell / 9 + i + 1) % 9;
+            col = cell % 9;
+        }
+        else {
+            row = cell / 9 / 3 * 3 + ((cell % 9 % 3 + i + 1) / 3 + cell / 9 % 3) % 3;
+            col = cell % 9 / 3 * 3 + (cell % 9 % 3 + i + 1) % 3;
+        }
+
+        if (perm.size() == 0) {
+            if (marks[row][col].size() > 1) {
+                cells.push_back(9 * row + col);
+            }
+        } else {
+            if (find(perm.begin(), perm.end(), 9 * row + col) == perm.end()) {
+                cells.push_back(9 * row + col);
+            }
+        }
+        
+
+    }
+
+    return cells;
 
 }
 
-void removeInversePermMarks(vector<int> m, vector<int> perm, int sector, int cell) {
+void removeInversePermMarks(vector<int> m, vector<int> inversePerm) {
 
     int row, col;
 
-    for (int i = 0; i < perm.size(); i++) {
+    for (int i = 0; i < inversePerm.size(); i++) {
 
-        //ROW
-        if (sector == 0) {
-            row = cell / 9;
-            col = (cell % 9 + perm[i] + 1) % 9;
-        }
-
-        //COLUMN
-        else if (sector == 1) {
-            row = (cell / 9 + perm[i] + 1) % 9;
-            col = cell % 9;
-        }
-
-        //BLOCK
-        else {
-            row = cell / 9 / 3 * 3 + ((cell % 9 % 3 + perm[i] + 1) / 3 + cell / 9 % 3) % 3;
-            col = cell % 9 / 3 * 3 + (cell % 9 % 3 + perm[i] + 1) % 3;
-        }
+        row = inversePerm[i] / 9;
+        col = inversePerm[i] % 9;
 
         for (int j = 0; j < m.size(); j++) {
+
             removeMark(m[j], row, col);
-        }
-
-    }
-
-}
-
-void FindNakedSubset(int n, vector<int> perm, int cell) {
-
-    vector<int> m;
-    vector<int> inversePerm = inversePermutation(perm);
-
-    for (int i = 0; i < 3; i++) {
-
-        m = unionMarks(perm, i, cell);
-
-        if (m.size() == n) {
-
-            removeInversePermMarks(m, inversePerm, i, cell);
 
         }
 
@@ -273,58 +226,63 @@ void FindNakedSubset(int n, vector<int> perm, int cell) {
 
 }
 
+void FindNakedSubset(int n, vector<int> perm, int cell, vector<int> potentialCells, int sector) {
 
-// n = size of subset
-// index = current index of subset
-// arr = full subset
-int perms;
-void permutation(int n, int index, vector<int> arr, int cell) {
+    vector<int> cells, m;
+    
+    for(int i = 0; i < perm.size(); i++) {
+        cells.push_back(potentialCells[perm[i]]);
+    }
 
-    for (int i = index == 0 ? 0 : arr[index - 1] + 1; i < 9 - n + index; i++) {
+    m = unionMarks(cell, cells);
+
+    if (m.size() == n) {
+
+        vector<int> inversePerm = getCells(cell, sector, cells);
+        removeInversePermMarks(m, inversePerm);
+
+    }
+
+
+}
+
+void permutation(int n, int index, vector<int> perm, int cell, vector<int> potentialCells, int sector) {
+
+    for (int i = index == 0 ? 0 : perm[index - 1] + 1; i < potentialCells.size() + 1 - n + index; i++) {
         
-        arr[index] = i;
+        perm[index] = i;
         if (index != n - 1) {
-            permutation(n, index + 1, arr, cell);
+            permutation(n, index + 1, perm, cell, potentialCells, sector);
         } else {
-            perms++;
-            //At every permutation, find the union of marks amongst the row, column and block
-            FindNakedSubset(n + 1, arr, cell);
+            FindNakedSubset(n + 1, perm, cell, potentialCells, sector);
         }
 
     }
 
 }
-
-// void NakedSubset() {
-
-//     vector<int> arr;
-//     arr.push_back(0);
-
-//     //Create all permutations of [0 - 8], starting with tuple size 2 up to size 8
-//     for (int i = 2; i < 9; i++) {
-//         arr.push_back(0);
-//         permutation(i, 0, arr);
-//     }
-
-// }
 
 void NakedSubset(int cell) {
 
-    perms = 0;
-    vector<int> arr;
     int row = cell / 9;
     int col = cell % 9;
+    vector<int> perm;
+    vector<int> potentialCells;
 
-    for (int i = 0; i < marks[row][col].size() - 2; i++) {
-        arr.push_back(0);
+    for (int i = 0; i < 3; i++) {
+
+        potentialCells = getCells(cell, i);
+        perm.clear();
+
+        for (int j = 0; j < marks[row][col].size() - 2; j++) {
+            perm.push_back(0);
+        }
+
+        for (int j = marks[row][col].size() - 1; j < potentialCells.size() + 1; j++) {
+            perm.push_back(0);
+            permutation(j, 0, perm, cell, potentialCells, i);
+        }
+
     }
-
-    for (int i = marks[row][col].size() - 1; i < 8; i++) {
-        arr.push_back(0);
-        permutation(i, 0, arr, cell);
-    }
-
-    cout << perms << endl;
 
 }
 
